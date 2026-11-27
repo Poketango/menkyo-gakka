@@ -1,4 +1,5 @@
 :root{--ink:#222;--sub:#666;--line:#ddd;--key:#1f6f43;--bg:#fafaf7;--ok:#1f6f43;--ng:#b3261e}
+[hidden]{display:none!important}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Yu Gothic",Meiryo,sans-serif;line-height:1.8;font-size:16px}
 a{color:var(--key)}
