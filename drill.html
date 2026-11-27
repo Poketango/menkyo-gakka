@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>学科試験○×ドリル｜がっかドリル</title>
+<meta name="description" content="仮免・本免の学科試験によく出る○×問題を、1問ずつ解説付きで解けるドリルです。分野別にも練習できます。">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap"><a class="logo" href="./">がっか<span>ドリル</span></a><nav><a href="drill.html">ドリル</a><a href="numbers.html">数字まとめ</a><a href="exam.html">試験の形式</a></nav></div></header>
+<main><div class="wrap">
+<h1 id="title">学科試験○×ドリル</h1>
+<div class="box" id="setup">
+<p>出題する分野を選んでください。全問から出すときは「全分野」のままで始めます。</p>
+<p><select id="cat" style="font-size:16px;padding:6px"></select>
+<select id="num" style="font-size:16px;padding:6px"><option value="10">10問</option><option value="20">20問</option><option value="0">全部</option></select></p>
+<button class="btn" id="start">はじめる</button>
+</div>
+<div class="box" id="quiz" hidden>
+<div class="qno" id="qno"></div>
+<div class="qtext" id="qtext"></div>
+<div class="ans"><button id="bo" aria-label="正しい">○</button><button id="bx" aria-label="誤り">×</button></div>
+<div class="res" id="res" hidden></div>
+<p style="text-align:right"><button class="btn" id="next" hidden>次の問題へ</button></p>
+</div>
+<div class="box" id="end" hidden></div>
+<div class="ad"><!-- 広告枠 --></div>
+<p class="note">問題と解説は、国家公安委員会の「交通の方法に関する教則」の内容をもとに作っています。実際の試験の問題そのものではありません。</p>
+</div></main>
+<footer><div class="wrap"><a href="./">トップ</a><a href="about.html">このサイトについて</a><a href="privacy.html">プライバシーポリシー</a><br>© がっかドリル</div></footer>
+<script src="questions.js"></script>
+<script>
+const Q=window.QUESTIONS, $=id=>document.getElementById(id);
+const cats=[...new Set(Q.map(x=>x.c))];
+$('cat').innerHTML='<option value="">全分野</option>'+cats.map(c=>`<option>${c}</option>`).join('');
+const p=new URLSearchParams(location.search); if(p.get('c'))$('cat').value=p.get('c');
+let list=[],i=0,score=0,miss=[];
+$('start').onclick=()=>{
+  const c=$('cat').value,n=+$('num').value;
+  list=Q.filter(x=>!c||x.c===c).sort(()=>Math.random()-.5);
+  if(n)list=list.slice(0,n);
+  i=0;score=0;miss=[];$('setup').hidden=true;$('end').hidden=true;$('quiz').hidden=false;show();
+};
+function show(){const x=list[i];$('qno').innerHTML=`第${i+1}問 / ${list.length}問　<span class="tag">${x.c}</span>`;$('qtext').textContent=x.q;$('res').hidden=true;$('next').hidden=true;$('bo').disabled=$('bx').disabled=false;}
+function answer(v){const x=list[i],ok=v===x.a;if(ok)score++;else miss.push(x);
+  $('bo').disabled=$('bx').disabled=true;
+  $('res').innerHTML=`<b class="${ok?'ok':'ng'}">${ok?'正解':'不正解'}</b>　答えは ${x.a?'○':'×'}<br>${x.e}`;$('res').hidden=false;
+  $('next').textContent=i+1<list.length?'次の問題へ':'結果を見る';$('next').hidden=false;}
+$('bo').onclick=()=>answer(true);$('bx').onclick=()=>answer(false);
+$('next').onclick=()=>{i++;if(i<list.length)show();else end();};
+function end(){$('quiz').hidden=true;const pct=Math.round(score/list.length*100);
+  $('end').innerHTML=`<h2>結果　${score} / ${list.length}問正解（${pct}点）</h2><p>${pct>=90?'合格ラインの90点に届いています。':'本番の合格ラインは90点です。間違えた問題を見直しましょう。'}</p>`+
+  (miss.length?'<h3>間違えた問題</h3>'+miss.map(x=>`<p><b>${x.q}</b><br>答え ${x.a?'○':'×'}　${x.e}</p>`).join(''):'')+
+  '<p><button class="btn" onclick="location.reload()">もう一度</button></p>';$('end').hidden=false;}
+</script>
+</body>
+</html>
